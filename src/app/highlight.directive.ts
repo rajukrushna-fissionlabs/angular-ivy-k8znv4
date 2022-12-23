@@ -4,6 +4,7 @@ import {
   OnInit,
   ChangeDetectorRef,
   Component,
+  Input,
 } from '@angular/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 
@@ -14,6 +15,7 @@ export class HighlightDirective implements OnInit {
   timeCounter: number = 0;
   timerRef: any;
   idleState = 'NOT_STARTED';
+  @Input() pageKey = '';
 
   constructor(private idle: Idle, cd: ChangeDetectorRef) {
     // set idle parameters
@@ -31,9 +33,13 @@ export class HighlightDirective implements OnInit {
       this.idleState = 'NOT_IDLE';
       console.log(`${this.idleState} ${new Date()}`);
       cd.detectChanges(); // how do i avoid this kludge?
+      this.reset();
     });
     // do something when the user has timed out
-    idle.onTimeout.subscribe(() => (this.idleState = 'TIMED_OUT'));
+    idle.onTimeout.subscribe(() => {
+      console.log('timed out');
+      this.idleState = 'TIMED_OUT';
+    });
   }
 
   ngOnInit() {
@@ -58,6 +64,7 @@ export class HighlightDirective implements OnInit {
   }
 
   stopTimer() {
+    console.log(this.pageKey);
     console.log('timer paused at: ', this.timeCounter.toString());
     clearInterval(this.timerRef);
   }
